@@ -1,0 +1,59 @@
+body {
+	background-color: #26343f;
+	color: #ffffff;
+	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 18px;
+	margin: 0;
+	padding: 10px; 
+}
+.pb {padding-bottom: 10px;}
+.pbm {padding-bottom: 20px;}
+.ptm {padding-top: 20px;}
+.pr {padding-right: 10px;}
+.prm {padding-right: 20px;}
+.closed {display:none;}
+.clear {clear:both;}
+.txt20 {font-size: 20px;}
+input[type="button"] {background-color: #00b299;border:1px solid #00b299;border-radius:5px;color:#ffffff;cursor:pointer;font-size:16px;font-weight:600;padding:8px;}
+select {cursor:pointer;font-size:16px;padding:5px;}
+div.tooltip {   
+	background-color: #ffffff;
+	border: 1px solid #000000;      
+	border-radius: 5px;
+	color: #000000;
+	font-size: 14px;
+	font-weight: 800;
+	opacity: 0;
+	padding: 4px;
+	position: absolute;           
+	text-align: center;           
+	width: 250px;                
+	height: 18px;
+	pointer-events: none;
+}
+.background {fill: #FFFFFF;fill-opacity: 0.01;}
+
+.component {fill: #f9f9f9;}
+
+.component .label {font-family: Myriad, "Helvetic Neue", Helvetica, Arial;text-anchor: middle;fill: #ffffff;}
+
+.arc {stroke-weight:0.1;}
+
+.label {font-family:  Myriad, "Helvetic Neue", Helvetica, Arial;text-anchor: middle;color: #ffffff !important;}
+
+/*.radial-svg {display: block;margin: 0 auto;}*/
+
+.radialItem {float:left;margin:20px;width:30%;}
+
+#radialContainer text {fill:#ffffff;}
+
+/*fill for Academic Reputation Score*/
+#academicReputationScore .arc {fill:#FFB300;}
+
+/*fill for Employer Reputation Score*/
+#employerReputationScore .arc {fill:#4CFF00;}
+
+/*fill for Over All Score*/
+#overAllScore .arc {fill:#C907FF;}
+
+#backToResults, #backToResults:hover, #backToResults:visited {color: #ffffff;}

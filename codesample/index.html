@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> University Scores</title>
+<link type="text/css" rel="stylesheet" href="css/styles.css" />
+<script type="text/javascript" src="js/d3.min.js"></script>
+<script type="text/javascript" src="js/radialProgress.js"></script>
+</head>
+<body>
+	<p>Search for Universities in 3 Steps.</p>
+  <div class="pbm">
+  	<span>Step 1 &ndash;</span>
+  	<label for="category" class="pr">Select Category:</label>
+    <select id="category">
+    	<option value="0">-Select-</option>
+      <option value="AcademicReputationScore">Academic Reputation Score</option>
+      <option value="EmployerReputationScore">Employer Reputation Score</option>
+      <option value="FacultyStudentScore">Faculty Student Score</option>
+      <option value="CitationsPerFacultyScore">Citations per Faculty Score</option>
+      <option value="InternationalFacultyScore">International faculty Score</option>
+      <option value="InternationalStudentsScore">International Students Score</option>
+    </select>
+  </div>
+  <div class="pbm">
+  	<span>Step 2 &ndash;</span>
+  	<label for="scoreRange" class="pr">Select Score Range:</label>
+    <select id="scoreRange">
+    	<option value="0">-Select-</option>
+      <option value="range1">90 TO 100</option>
+      <option value="range2">80 TO 90</option>
+      <option value="range3">70 TO 80</option>
+      <option value="range4">60 TO 70</option>
+      <option value="range5">50 TO 60</option>
+      <option value="range6">40 TO 50</option>
+      <option value="range7">30 TO 40</option>
+      <option value="range8">20 TO 30</option>
+      <option value="range9">10 TO 20</option>
+      <option value="range10">0 TO 10</option>
+    </select>
+  </div>
+  <div class="pbm">
+  	<span>Step 3 &ndash;</span>
+  	<input type="button" name="universityButton" value="View Results" title="View Results" onclick="loadData()" />
+  </div>  
+  <div id="chartContainer" class="closed">
+  	<div class="pbm"><span class="prm">Legend:</span> <span class="prm js-lowRange"></span> <span class="prm js-mediumRange"></span> <span class="prm js-highRange"></span></div>
+  </div>
+	<div id="radialContainer" class="ptm closed" style="width:1500px;">
+    <div id="universityName" class="pbm txt20"></div>
+    <div id="academicReputationScore" class="radialItem"></div>
+    <div id="employerReputationScore" class="radialItem"></div>
+    <div id="overAllScore" class="radialItem"></div>
+    <div class="clear"><!-- --></div>
+    <a id="backToResults" href="javascript:void(0);" title="Go back to Results">Back To Results</a>
+  </div>
+	<script type="text/javascript">
+		var searchCriteria, minRange, maxRange,
+		chartWidth = 1800,
+		chartHeight = 1200,
+		barWidth = 20,
+		gap = barWidth + 10; 
+		
+		//handle change of Category
+		d3.select('#category').on('change', function() {
+			searchCriteria = this.options[this.selectedIndex].value;
+		});
+		
+		//handle change of Score Range
+		d3.select('#scoreRange').on('change', function() {
+			if(this.options[this.selectedIndex].value == 'range1') {
+				minRange = 90;
+				maxRange = 100;
+			} else if(this.options[this.selectedIndex].value == 'range2') {
+				minRange = 80;
+				maxRange = 90;
+			} else if(this.options[this.selectedIndex].value == 'range3') {
+				minRange = 70;
+				maxRange = 80;
+			} else if(this.options[this.selectedIndex].value == 'range4') {
+				minRange = 60;
+				maxRange = 70;
+			} else if(this.options[this.selectedIndex].value == 'range5') {
+				minRange = 50;
+				maxRange = 60;
+			} else if(this.options[this.selectedIndex].value == 'range6') {
+				minRange = 40;
+				maxRange = 50;
+			} else if(this.options[this.selectedIndex].value == 'range7') {
+				minRange = 30;
+				maxRange = 40;
+			} else if(this.options[this.selectedIndex].value == 'range8') {
+				minRange = 20;
+				maxRange = 30;
+			} else if(this.options[this.selectedIndex].value == 'range9') {
+				minRange = 10;
+				maxRange = 20;
+			} else if(this.options[this.selectedIndex].value == 'range10') {
+				minRange = 0;
+				maxRange = 10;
+			}
+			//set Legend
+			d3.select('.js-lowRange').html('&ndash;&ndash; Scores in between ' + minRange + ' &amp; ' + parseInt(minRange + 3)).style('color', '#ff0000');
+			d3.select('.js-mediumRange').html('&ndash;&ndash; Scores in between ' + parseInt(minRange + 4) + ' &amp; ' + parseInt(minRange + 7)).style('color', '#ffff00');
+			d3.select('.js-highRange').html('&ndash;&ndash; Scores in between ' + parseInt(minRange + 8) + ' &amp; ' + maxRange).style('color', '#00ff00');
+		});
+		
+		//handle click of Back To Results
+		d3.select('#backToResults').on('click', function() {
+			d3.select('#chartContainer').attr('class', null);
+			d3.select('#radialContainer').attr('class', 'closed');
+		});
+		
+		function loadData() {
+			//reset view of the chart
+			d3.select('#chartContainer').attr('class', null);
+			d3.select('#chartContainer svg').remove();
+			//insert Chart Tooltip	
+			var chartTooltip = d3.select('#chartContainer').append('div')   
+									.attr("class", "tooltip");
+			//Load CSV	  	  
+			d3.csv('WorldUniversities.csv', function(data) {
+				var chartContainer = d3.select('#chartContainer').append('svg')
+														.attr('width', chartWidth)
+														.attr('height', chartHeight);
+														
+				var scaledValue = d3.scale.linear().domain([minRange, maxRange]).range([0, 400]);
+				
+				var bar = chartContainer.selectAll('g')
+											.data(data)
+											.enter()
+											.append('g');
+				//append University Name							
+				bar.append('text')
+					 .filter(function(d) {
+							if(parseInt(d[searchCriteria]) > minRange && parseInt(d[searchCriteria]) <= maxRange) {
+								return true;
+							} else {
+								d3.select(this).remove();
+								return false;
+							}
+						})
+					 .text(function(d) {return d.Institution;})
+					 .attr('transform', function(d, i) {
+							var adjustedValue = (i * gap) + 15;
+							return 'translate('+adjustedValue+', 460) rotate(280)';
+					 })
+					 .attr('fill', '#ffffff');
+				//append Bar, if the data meets the Search Criteria	 
+				bar.append('rect')
+					 .filter(function(d) {
+							if(parseInt(d[searchCriteria]) > minRange && parseInt(d[searchCriteria]) <= maxRange) {
+								return true;
+							} else {
+								d3.select(this).remove();
+								return false;
+							}
+						})
+						.on('mousemove', function(d) {
+							chartTooltip.style('left', (d3.event.pageX) + 'px')     
+							.style('top', (d3.event.pageY - 28) + 'px')
+							chartTooltip.html(searchCriteria + ': ' + d[searchCriteria])
+							chartTooltip.transition()
+							.duration(200)      
+							.style('opacity', .9)
+						})
+						.on('mouseout', function(d) {
+							chartTooltip.style('opacity', 0)
+						})
+						.attr('class', 'bar')
+						.attr('width', barWidth)
+						.attr('height', function(d, i) { 
+							return scaledValue(parseInt(d[searchCriteria]));
+						})
+						.attr('x', function(d, i) {return i * gap;})
+						.attr('y', 465)
+						.attr('fill', function(d, i) {
+							if(parseInt(d[searchCriteria]) >= minRange && parseInt(d[searchCriteria]) <= minRange + 3) {
+								return '#ff0000';	
+							} else if(parseInt(d[searchCriteria]) >= minRange + 4 && parseInt(d[searchCriteria]) <= minRange + 7) {
+								return '#ffff00';
+							} else if(parseInt(d[searchCriteria]) >= minRange + 8 && parseInt(d[searchCriteria]) <= maxRange) {
+								return '#00ff00';
+							}
+						})
+						.style('cursor', 'pointer')
+						//handle click of Bar
+						.on('click', function(d) {
+							d3.select('#chartContainer').attr('class', 'closed');
+							d3.select('#radialContainer').attr('class', null);
+							d3.select('#universityName').html('Selected University: ' + d.Institution);
+							var academicReputation = radialProgress(document.getElementById('academicReputationScore'))
+									.label("Academic Reputation Score")
+									.diameter(250)
+									.minValue(0)
+									.maxValue(100)
+									.value(d.AcademicReputationScore)
+									.render();
+	
+							var employerReputation = radialProgress(document.getElementById('employerReputationScore'))
+											.label("Employer Reputation Score")
+											.diameter(250)
+											.minValue(0)
+											.maxValue(100)
+											.value(d.EmployerReputationScore)
+											.render();
+			
+							var overAllScore = radialProgress(document.getElementById('overAllScore'))
+											.label("Over All Score")
+											.diameter(250)
+											.minValue(0)
+											.maxValue(100)
+											.value(d.OverallScore)
+											.render();
+							
+						});
+			});
+		}	
+	</script>	
+</body>
+</html>
